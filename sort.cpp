@@ -32,6 +32,7 @@ void vDeleteList(Node*& ptrList);
 
 /*  ---- FUNÇÕES DE SORT IMPLEMENTADAS ----  */
 void vBubbleSort(Node*& ptrList);
+void vSelectSort(Node*& ptrList);
 
 /*  ---- FUNÇÕES EXTRAS UTILIZADAS ----  */
 void vSwapElements(Node* ptrNode1, Node* ptrNode2);
@@ -58,13 +59,36 @@ int main()
     vPrintList(ptrList);
 
 
+    // Recria outra lista
+    ptrList = ptrGenerateRandomList(10);
+
+    cout << " ======= SELECT SORT ======= " << endl;
+    cout << "Nova lista: ";
+    vPrintList(ptrList);
+
+    // Ordena-a com select sort e mede o tempo gasto
+    vSelectSort(ptrList);
+    cout << "Lista ordenada: ";
+    vPrintList(ptrList);
+
+    // Limpa da memória
+    vDeleteList(ptrList);
+    vPrintList(ptrList);
+
+
     // Mede o tempo gasto em vários testes com bubble
-    cout << "Tempo medio gasto em 100 listas de tamanho 100 com bubble: ";
+    cout << endl << "Tempo medio gasto em 100 listas de tamanho 100 com bubble: ";
 
     int64_t aTotalTime = iRandomTests(100, 100, vBubbleSort);
 
     cout << aTotalTime / 100 << " ns" << endl;
 
+    // Mede o tempo gasto em vários testes com select
+    cout << endl << "Tempo medio gasto em 100 listas de tamanho 100 com select: ";
+
+    aTotalTime = iRandomTests(100, 100, vSelectSort);
+
+    cout << aTotalTime / 100 << " ns" << endl;
 
     // Fim
     return 0;
@@ -206,6 +230,42 @@ void vBubbleSort(Node*& ptrList)
         ptrFoo = ptrList;
     }
 
+}
+
+void vSelectSort(Node*& ptrList)
+{
+    // Caso for vazia, não há nada a fazer
+    if (ptrList == nullptr)
+        return;
+
+    // Ponteiros que percorrerão a lista
+    Node* ptrUnsortedList = ptrList;
+    Node* ptrFoo = ptrList;
+
+    // Holder para o menor elemento encontrado em cada loop
+    Node* ptrHolder = ptrList;
+
+    while (ptrUnsortedList->ptrNext != nullptr)
+    {
+        while(ptrFoo != nullptr)
+        {
+            // Caso, nesta iteração, ptrFoo seja menor, salva-o
+            if (ptrFoo->iValue < ptrHolder->iValue)
+            {
+                ptrHolder = ptrFoo;
+            }
+
+            ptrFoo = ptrFoo->ptrNext;
+        }
+
+        // Troca-os de lugar
+        vSwapElements(ptrUnsortedList, ptrHolder);
+
+        // Por fim, fazem-nos começar numa nova lista menor
+        ptrUnsortedList = ptrUnsortedList->ptrNext;
+        ptrFoo = ptrUnsortedList;
+        ptrHolder = ptrFoo;
+    }
 }
 
 
